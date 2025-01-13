@@ -1,0 +1,256 @@
+rm -rf ~/.config/nvim ~/.local/share/nvim ~/.local/state/nvim ~/.cache/nvim && \
+mkdir -p ~/.config/nvim/lua/{config,plugins} && \
+echo '-- Set leader key before loading plugins
+vim.g.mapleader = " "
+
+-- Bootstrap lazy.nvim
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    lazypath,
+  })
+end
+vim.opt.rtp:prepend(lazypath)
+
+-- Load plugins
+require("lazy").setup("plugins")
+
+-- Load configurations
+require("config.lsp")
+require("config.cmp")
+require("config.treesitter")
+require("config.nvim-tree")
+require("config.toggleterm")
+require("config.gitsigns")
+require("config.colorscheme")
+require("config.keybindings")
+require("config.prettier")
+require("config.autopairs")
+require("config.comment")
+require("config.statusline")
+
+-- Custom UI with "NISCHAL"
+vim.api.nvim_create_autocmd("VimEnter", {
+  callback = function()
+    vim.cmd([[echom "NISCHAL"]])
+    vim.cmd([[echom "Welcome to Neovim!"]])
+  end,
+})' > ~/.config/nvim/init.lua && \
+echo 'return {
+  -- Plugin Manager
+  { "folke/lazy.nvim" },
+
+  -- LSP (Language Server Protocol)
+  { "neovim/nvim-lspconfig" },
+  { "williamboman/mason.nvim" },
+  { "williamboman/mason-lspconfig.nvim" },
+
+  -- Autocompletion
+  { "hrsh7th/nvim-cmp" },
+  { "hrsh7th/cmp-nvim-lsp" },
+  { "L3MON4D3/LuaSnip" },
+  { "saadparwaiz1/cmp_luasnip" },
+
+  -- Syntax Highlighting
+  { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
+
+  -- File Explorer
+  { "nvim-tree/nvim-tree.lua" },
+
+  -- Terminal
+  { "akinsho/toggleterm.nvim" },
+
+  -- Git Integration
+  { "lewis6991/gitsigns.nvim" },
+
+  -- Themes
+  { "folke/tokyonight.nvim" },
+
+  -- Prettier
+  { "jose-elias-alvarez/null-ls.nvim" }, -- For Prettier and other formatters
+  { "MunifTanjim/prettier.nvim" },       -- Prettier plugin
+
+  -- Auto Pairs (Bracket Closing)
+  { "windwp/nvim-autopairs" },
+
+  -- Commenting
+  { "numToStr/Comment.nvim" },
+
+  -- Telescope (Fuzzy Finder)
+  { "nvim-telescope/telescope.nvim", branch = "0.1.x", dependencies = { "nvim-lua/plenary.nvim" } },
+
+  -- Minimal Statusline
+  { "nvim-lualine/lualine.nvim" },
+}' > ~/.config/nvim/lua/plugins/init.lua && \
+echo 'local lspconfig = require("lspconfig")
+local mason = require("mason")
+local mason_lspconfig = require("mason-lspconfig")
+
+-- Setup Mason
+mason.setup()
+
+-- Automatically install LSP servers
+mason_lspconfig.setup({
+  ensure_installed = { "ts_ls", "tailwindcss", "eslint", "html", "cssls", "lua_ls" },
+})
+
+-- Setup LSP servers
+mason_lspconfig.setup_handlers({
+  function(server_name)
+    lspconfig[server_name].setup({
+      on_attach = function(_, bufnr)
+        -- Keybindings for LSP
+        local opts = { noremap = true, silent = true }
+        local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
+
+        -- Go to definition
+        buf_set_keymap("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
+
+        -- Show hover documentation
+        buf_set_keymap("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", opts)
+
+        -- Rename symbol
+        buf_set_keymap("n", "<leader>rn", "<cmd>lua vim.lsp.buf.rename()<CR>", opts)
+
+        -- Show references
+        buf_set_keymap("n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>", opts)
+      end,
+    })
+  end,
+})' > ~/.config/nvim/lua/config/lsp.lua && \
+echo 'local cmp = require("cmp")
+local luasnip = require("luasnip")
+
+-- Load snippets from VS Code
+require("luasnip.loaders.from_vscode").lazy_load()
+
+cmp.setup({
+  snippet = {
+    expand = function(args)
+      luasnip.lsp_expand(args.body)
+    end,
+  },
+  mapping = cmp.mapping.preset.insert({
+    ["<C-b>"] = cmp.mapping.scroll_docs(-4), -- Scroll up in docs
+    ["<C-f>"] = cmp.mapping.scroll_docs(4),  -- Scroll down in docs
+    ["<C-Space>"] = cmp.mapping.complete(),  -- Trigger completion
+    ["<C-e>"] = cmp.mapping.abort(),         -- Close completion
+    ["<CR>"] = cmp.mapping.confirm({ select = true }), -- Confirm selection
+  }),
+  sources = cmp.config.sources({
+    { name = "nvim_lsp" }, -- LSP source
+    { name = "luasnip" },  -- Snippets source
+  }, {
+    { name = "buffer" },   -- Buffer source
+  }),
+})' > ~/.config/nvim/lua/config/cmp.lua && \
+echo 'require("nvim-treesitter.configs").setup({
+  ensure_installed = { "javascript", "typescript", "html", "css", "json", "lua" },
+  highlight = {
+    enable = true, -- Enable syntax highlighting
+  },
+  indent = {
+    enable = true, -- Enable indentation
+  },
+  autotag = {
+    enable = true, -- Auto close HTML/JSX tags
+  },
+})' > ~/.config/nvim/lua/config/treesitter.lua && \
+echo 'require("nvim-tree").setup({
+  view = {
+    width = 30,
+    side = "left",
+  },
+  renderer = {
+    group_empty = true, -- Group empty folders
+  },
+  filters = {
+    dotfiles = true, -- Hide dotfiles
+  },
+})' > ~/.config/nvim/lua/config/nvim-tree.lua && \
+echo 'require("toggleterm").setup({
+  size = 20,
+  open_mapping = [[<C-t>]],
+  direction = "horizontal",
+})' > ~/.config/nvim/lua/config/toggleterm.lua && \
+echo 'require("gitsigns").setup({
+  signs = {
+    add = { text = "+" },
+    change = { text = "~" },
+    delete = { text = "_" },
+  },
+})' > ~/.config/nvim/lua/config/gitsigns.lua && \
+echo 'vim.cmd("colorscheme tokyonight")' > ~/.config/nvim/lua/config/colorscheme.lua && \
+echo '-- Prettier configuration
+local null_ls = require("null-ls")
+local prettier = require("prettier")
+
+null_ls.setup({
+  sources = {
+    null_ls.builtins.formatting.prettier.with({
+      filetypes = { "javascript", "typescript", "css", "html", "json", "markdown" },
+    }),
+  },
+})
+
+-- Format on save
+vim.api.nvim_create_autocmd("BufWritePre", {
+  pattern = { "*.js", "*.ts", "*.css", "*.html", "*.json", "*.md" },
+  callback = function()
+    vim.lsp.buf.format({ async = false })
+  end,
+})' > ~/.config/nvim/lua/config/prettier.lua && \
+echo '-- Auto Pairs (Bracket Closing)
+require("nvim-autopairs").setup({})' > ~/.config/nvim/lua/config/autopairs.lua && \
+echo '-- Commenting
+require("Comment").setup({
+  toggler = {
+    line = "<C-/>", -- Ctrl + / for commenting
+  },
+  opleader = {
+    line = "<C-/>", -- Ctrl + / for commenting
+  },
+})' > ~/.config/nvim/lua/config/comment.lua && \
+echo '-- Minimal Statusline
+require("lualine").setup({
+  options = {
+    theme = "tokyonight",
+    component_separators = { left = "|", right = "|" },
+    section_separators = { left = "", right = "" },
+  },
+  sections = {
+    lualine_a = { "mode" },
+    lualine_b = { "branch", "diff", "diagnostics" },
+    lualine_c = { "filename" },
+    lualine_x = { "encoding", "fileformat", "filetype" },
+    lualine_y = { "progress" },
+    lualine_z = { "location" },
+  },
+})' > ~/.config/nvim/lua/config/statusline.lua && \
+echo 'vim.g.mapleader = " "
+
+-- VS Code-like keybindings
+vim.keymap.set("n", "<C-s>", ":w<CR>", { desc = "Save file" }) -- Ctrl+S to save
+vim.keymap.set("n", "<C-w>", ":bd<CR>", { desc = "Close buffer" }) -- Ctrl+W to close
+vim.keymap.set("n", "<C-n>", ":NvimTreeToggle<CR>", { desc = "Toggle File Explorer" }) -- Ctrl+N for file explorer
+vim.keymap.set("n", "<C-t>", ":ToggleTerm<CR>", { desc = "Toggle Terminal" }) -- Ctrl+T for terminal
+vim.keymap.set("n", "<C-p>", ":Telescope find_files<CR>", { desc = "Find files" }) -- Ctrl+P to find files
+vim.keymap.set("n", "<C-f>", "/", { desc = "Search in file" }) -- Ctrl+F to search
+vim.keymap.set("n", "<C-h>", ":split<CR>", { desc = "Horizontal split" }) -- Ctrl+H for horizontal split
+vim.keymap.set("n", "<C-v>", ":vsplit<CR>", { desc = "Vertical split" }) -- Ctrl+V for vertical split
+vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Move to below split" }) -- Ctrl+J to move down
+vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Move to above split" }) -- Ctrl+K to move up
+vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Move to right split" }) -- Ctrl+L to move right
+vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "Move to left split" }) -- Ctrl+H to move left
+
+-- Neovim keybindings
+vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { desc = "Toggle File Explorer" }) -- Leader+E for file explorer
+vim.keymap.set("n", "<leader>ff", ":Telescope find_files<CR>", { desc = "Find files" }) -- Leader+FF to find files
+vim.keymap.set("n", "<leader>fg", ":Telescope live_grep<CR>", { desc = "Live grep" }) -- Leader+FG to live grep
+vim.keymap.set("n", "<leader>fb", ":Telescope buffers<CR>", { desc = "Find buffers" }) -- Leader+FB to find buffers
+vim.keymap.set("n", "<leader>fh", ":Telescope help_tags<CR>", { desc = "Help tags" }) -- Leader+FH for help tags' > ~/.config/nvim/lua/config/keybindings.lua && \
+nvim +"Lazy sync" +"MasonInstall tsserver tailwindcss eslint html cssls lua-language-server" +"TSInstall javascript typescript html css json lua" +qall

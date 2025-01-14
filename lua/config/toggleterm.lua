@@ -1,22 +1,26 @@
 require("toggleterm").setup({
-  size = 20,               -- Default terminal size
-  open_mapping = [[<C-`>]], -- Use Ctrl + ` to toggle the terminal
+  -- Configuration for multiple terminals
+  open_mapping = [[<C-t>]], -- Ctrl+T to toggle the first terminal
   direction = "horizontal", -- Default terminal direction
-  hide_numbers = true,      -- Hide terminal numbers
-  shade_filetypes = {},
-  shade_terminals = true,
-  shading_factor = 2,       -- Darken the terminal background
-  start_in_insert = true,   -- Start the terminal in insert mode
-  insert_mappings = true,   -- Allow mappings in insert mode
-  persist_size = true,      -- Remember the terminal size
-  close_on_exit = true,     -- Close the terminal when the process exits
-  shell = vim.o.shell,      -- Use the default shell
-  float_opts = {
-    border = "curved",      -- Border style for floating terminal
-    winblend = 0,           -- Transparency for floating terminal
-    highlights = {
-      border = "Normal",
-      background = "Normal",
+  size = 20, -- Default terminal size
+  shade_terminals = true, -- Add shading to distinguish terminals
+  persist_mode = true, -- Remember terminal state between sessions
+  start_in_insert = true, -- Start in insert mode
+  close_on_exit = false, -- Don't close the terminal when the process exits
+  shell = vim.o.shell, -- Use the default shell
+  -- Additional terminal instances
+  terminals = {
+    {
+      cmd = "bash", -- Command to run in the terminal
+      direction = "horizontal", -- Direction of the terminal
+      size = 20, -- Size of the terminal
+      hidden = true, -- Start hidden
+    },
+    {
+      cmd = "bash", -- Command to run in the second terminal
+      direction = "vertical", -- Direction of the second terminal
+      size = 50, -- Size of the second terminal
+      hidden = true, -- Start hidden
     },
   },
 })

@@ -15,6 +15,7 @@ vim.opt.rtp:prepend(lazypath)
 
 vim.opt.clipboard = "unnamedplus"
 
+
 -- Load plugins
 require("lazy").setup("plugins")
 
@@ -31,11 +32,10 @@ require("config.prettier")
 require("config.autopairs")
 require("config.comment")
 require("config.statusline")
+require("config.bufferline")
+require("config.dashboard")
+require("config.indent-blankline")
+require("config.options")
+require("config.options")
 
--- Custom UI with "NISCHAL"
-vim.api.nvim_create_autocmd("VimEnter", {
-  callback = function()
-    vim.cmd([[echom "NISCHAL"]])
-    vim.cmd([[echom "Welcome to Neovim!"]])
-  end,
-})
+

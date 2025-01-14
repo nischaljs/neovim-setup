@@ -7,6 +7,15 @@ return {
   { "williamboman/mason.nvim" },
   { "williamboman/mason-lspconfig.nvim" },
 
+
+  { "akinsho/bufferline.nvim", version = "*", dependencies = "nvim-tree/nvim-web-devicons" },
+
+  
+  { "glepnir/dashboard-nvim" },
+
+  --lines to show indentation
+  { "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
+
   -- Autocompletion
   { "hrsh7th/nvim-cmp" },
   { "hrsh7th/cmp-nvim-lsp" },

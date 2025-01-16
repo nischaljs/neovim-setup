@@ -22,6 +22,18 @@ return {
   { "L3MON4D3/LuaSnip" },
   { "saadparwaiz1/cmp_luasnip" },
 
+  {
+    "glepnir/lspsaga.nvim",
+    event = "LspAttach",
+    config = function()
+      require("config.lspsaga") -- Load your lspsaga configuration
+    end,
+    dependencies = {
+      "nvim-tree/nvim-web-devicons", -- Optional, for icons
+      "nvim-treesitter/nvim-treesitter", -- Optional, for better syntax highlighting
+    },
+  },
+
   -- Syntax Highlighting
   { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
 

@@ -102,3 +102,31 @@ vim.opt.visualbell = false -- Disable visual bells
 
 -- Enable better window behavior
 vim.opt.equalalways = false -- Do not automatically resize windows when splitting/closing 
+
+
+-- Enable hover diagnostics
+vim.api.nvim_create_autocmd("CursorHold", {
+    pattern = "*",
+    callback = function()
+      vim.diagnostic.open_float(nil, { focusable = false })
+    end,
+  })
+
+
+
+  -- Customize diagnostic floating window
+vim.diagnostic.config({
+    virtual_text = false, -- Disable inline virtual text
+    signs = true,         -- Show signs in the sign column
+    underline = true,     -- Underline errors
+    update_in_insert = false, -- Don't update diagnostics in insert mode
+    severity_sort = true, -- Sort diagnostics by severity
+    float = {
+      focusable = false,  -- Make the floating window non-focusable
+      style = "minimal",  -- Minimal style for the floating window
+      border = "rounded", -- Rounded border for the floating window
+      source = "always",  -- Always show the source of the diagnostic
+      header = "",        -- No header in the floating window
+      prefix = "",        -- No prefix in the floating window
+    },
+  })

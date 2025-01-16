@@ -30,6 +30,14 @@ mason_lspconfig.setup_handlers({
 
         -- Show references
         buf_set_keymap("n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>", opts)
+
+        -- Enable hover diagnostics
+        vim.api.nvim_create_autocmd("CursorHold", {
+          buffer = bufnr,
+          callback = function()
+            vim.diagnostic.open_float(nil, { focusable = false })
+          end,
+        })
       end,
     })
   end,

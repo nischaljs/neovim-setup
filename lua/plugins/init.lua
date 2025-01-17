@@ -1,19 +1,20 @@
 return {
-  -- Plugin Manager
+  -- Core
   { "folke/lazy.nvim" },
 
-  -- LSP (Language Server Protocol)
+  -- LSP 
   { "neovim/nvim-lspconfig" },
   { "williamboman/mason.nvim" },
   { "williamboman/mason-lspconfig.nvim" },
+  { "pmizio/typescript-tools.nvim", dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" } },
 
-
+  -- Bufferline
   { "akinsho/bufferline.nvim", version = "*", dependencies = "nvim-tree/nvim-web-devicons" },
 
-  
+  -- Dashboard
   { "glepnir/dashboard-nvim" },
 
-  --lines to show indentation
+  -- Indentation
   { "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
 
   -- Autocompletion

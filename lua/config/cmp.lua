@@ -18,9 +18,19 @@ cmp.setup({
     ["<CR>"] = cmp.mapping.confirm({ select = true }), -- Confirm selection
   }),
   sources = cmp.config.sources({
-    { name = "nvim_lsp" }, -- LSP source
-    { name = "luasnip" },  -- Snippets source
-  }, {
-    { name = "buffer" },   -- Buffer source
+    { name = "nvim_lsp", priority = 1000 }, -- LSP source
+    { name = "luasnip", priority = 750 },  -- Snippets source
+    { name = "buffer", priority = 500 },   -- Buffer source
   }),
+  sorting = {
+    comparators = {
+      cmp.config.compare.offset,
+      cmp.config.compare.exact,
+      cmp.config.compare.score,
+      cmp.config.compare.kind,
+      cmp.config.compare.sort_text,
+      cmp.config.compare.length,
+      cmp.config.compare.order,
+    },
+  },
 })
